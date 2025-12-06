@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOhd Asim Saad - Personal Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles and Animations -->
+    <style>
+        :root {
+            --bg-color: #0d0c22;
+            --primary-glow: #a855f7; /* purple-500 */
+            --secondary-glow: #6366f1; /* indigo-500 */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #e2e8f0; /* slate-200 */
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* --- Custom Glow Effects --- */
+        .text-glow {
+            text-shadow: 0 0 8px var(--primary-glow), 0 0 20px var(--secondary-glow);
+        }
+        .button-glow {
+            box-shadow: 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow) inset;
+            transition: all 0.3s ease-in-out;
+        }
+        .button-glow:hover {
+            box-shadow: 0 0 20px var(--primary-glow), 0 0 30px var(--primary-glow) inset, 0 0 5px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+        .card-glow {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #1e1b3a, #110f22);
+            border: 1px solid #332f54;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-glow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        /* --- Typing Caret --- */
+        .typing-effect::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* --- Animated Skill Bars --- */
+        .progress-bar-container {
+            background-color: #1e293b; /* slate-800 */
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, var(--secondary-glow), var(--primary-glow));
+            width: 0;
+            transition: width 2s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* --- Scroll-Reveal Animations (Initial State) --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Navbar Styles --- */
+        nav {
+            transition: background-color 0.3s ease-in-out;
+        }
+        .nav-scrolled {
+            background-color: rgba(13, 12, 34, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        /* --- Gallery Lightbox --- */
+        #lightbox {
+            z-index: 1000;
+        }
+        #lightbox.active {
+            display: grid;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Floating Navbar -->
+    <nav id="navbar" class="fixed w-full top-0 left-0 z-50 px-4 sm:px-8 py-3">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#home" class="text-xl md:text-2xl font-bold text-white text-glow">ASIM.COM</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#about" class="hover:text-purple-400 transition-colors duration-300">About</a>
+                <a href="#education" class="hover:text-purple-400 transition-colors duration-300">Skills</a>
+                <a href="#projects" class="hover:text-purple-400 transition-colors duration-300">Projects</a>
+                <a href="#gallery" class="hover:text-purple-400 transition-colors duration-300">Gallery</a>
+                <a href="#contact" class="hover:text-purple-400 transition-colors duration-300">Contact</a>
+            </div>
+             <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4">
+            <a href="#about" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">About</a>
+            <a href="#education" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Skills</a>
+            <a href="#projects" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Projects</a>
+            <a href="#gallery" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Gallery</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Contact</a>
+        </div>
+    </nav>
+    
+    <!-- Canvas for Animated Background -->
+    <canvas id="hero-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Hero Section -->
+        <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4">
+                <span id="typing-text" class="typing-effect"></span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-8 reveal">
+                I'm a passionate developer and creative thinker, crafting beautiful and functional digital experiences. Welcome to my corner of the web.
+            </p>
+            <a href="#projects" class="button-glow bg-purple-600 text-white font-bold py-3 px-8 rounded-full text-lg reveal" style="transition-delay: 200ms;">
+                View My Work
+            </a>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about" class="py-20 md:py-32">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white reveal">About Me</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto mt-4 reveal"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal">
+                    <img src="GIBLI.jpg" alt="MOHD ASIM SAAD" class="rounded-lg shadow-2xl w-full h-auto object-cover" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x600/0d0c22/ffffff?text=Image+Not+Found';">
+                </div>
+                <div class="space-y-6">
+                    <div class="reveal">
+                        <h3 class="text-2xl font-semibold text-purple-400 mb-2">My Bio</h3>
+                        <p class="text-slate-300">Hello! I'm a driven and curious individual with a love for technology and design. My journey started with a simple "Hello, World!" and has since evolved into a passion for building complex applications and user-centric interfaces. I thrive on challenges and continuously seek opportunities to learn and grow.</p>
+                    </div>
+                     <div class="reveal" style="transition-delay: 150ms;">
+                        <h3 class="text-2xl font-semibold text-purple-400 mb-2">Goals & Values</h3>
+                        <p class="text-slate-300">My primary goal is to contribute to projects that make a meaningful impact. I value collaboration, integrity, and a commitment to excellence. I believe in writing clean, scalable code and designing with empathy for the end-user.</p>
+                    </div>
+                     <div class="reveal" style="transition-delay: 300ms;">
+                        <h3 class="text-2xl font-semibold text-purple-400 mb-2">Interests</h3>
+                        <p class="text-slate-300">Outside of coding, I enjoy exploring sci-fi literature, landscape photography, and experimenting with electronic music production. These hobbies fuel my creativity and provide a fresh perspective on my technical work.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education & Skills Section -->
+        <section id="education" class="py-20 md:py-32">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white reveal">Education & Skills</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto mt-4 reveal"></div>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- Education -->
+                <div class="space-y-8 reveal">
+                    <h3 class="text-2xl font-semibold text-purple-400 border-b-2 border-purple-800 pb-2">Education</h3>
+                    <div class="card-glow p-6 rounded-lg">
+                        <p class="text-indigo-400 text-sm">2024 - 2028</p>
+                        <h4 class="text-xl font-bold text-white mt-1">Bachelor Of Engineering</h4>
+                        <p class="text-slate-400 mt-1">ISL Engineering College</p>
+                    </div>
+                    <div class="card-glow p-6 rounded-lg">
+                        <p class="text-indigo-400 text-sm">2023-2024</p>
+                        <h4 class="text-xl font-bold text-white mt-1">SSC 10th</h4>
+                        <p class="text-slate-400 mt-1">Goutham High School</p>
+                    </div>
+                </div>
+                <!-- Skills -->
+                <div class="space-y-8 reveal" style="transition-delay: 150ms;">
+                    <h3 class="text-2xl font-semibold text-purple-400 border-b-2 border-purple-800 pb-2">Skills</h3>
+                    <div class="space-y-6">
+                        <!-- Skill 1 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-slate-200">COMMUNICATION</span>
+                                <span class="text-sm font-medium text-slate-200">"92%"</span>
+                            </div>
+                            <div class="w-full progress-bar-container rounded-full h-2.5">
+                                <div class="progress-bar h-2.5 rounded-full" data-width="92%"></div>
+                            </div>
+                        </div>
+                        <!-- Skill 2 -->
+                         <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-slate-200">WEB DEVELOPMENT</span>
+                                <span class="text-sm font-medium text-slate-200">80%</span>
+                            </div>
+                            <div class="w-full progress-bar-container rounded-full h-2.5">
+                                <div class="progress-bar h-2.5 rounded-full" data-width="80%"></div>
+                            </div>
+                        </div>
+                        <!-- Skill 3 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-slate-200">LEADERSHIP</span>
+                                <span class="text-sm font-medium text-slate-200">85%</span>
+                            </div>
+                            <div class="w-full progress-bar-container rounded-full h-2.5">
+                                <div class="progress-bar h-2.5 rounded-full" data-width="85%"></div>
+                            </div>
+                        </div>
+                         <!-- Skill 4 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-slate-200">HARD WORKER</span>
+                                <span class="text-sm font-medium text-slate-200">100%</span>
+                            </div>
+                            <div class="w-full progress-bar-container rounded-full h-2.5">
+                                <div class="progress-bar h-2.5 rounded-full" data-width="100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 md:py-32">
+             <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white reveal">My Projects</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto mt-4 reveal"></div>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project Card 1 -->
+                <div class="card-glow rounded-lg reveal">
+                    <img src="https://placehold.co/600x400/1e1b3a/a855f7?text=Project+1" class="rounded-t-lg"
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1e1b3a/ffffff?text=Image+Not+Found';">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white">ZOMATO CLONE</h3>
+                        <p class="text-slate-400 mt-2">I created a Zomato Clone – a frontend web application inspired by the original Zomato website. It mimics the core layout, design, and some functionalities like searching for restaurants, displaying food categories, and showing restaurant cards with ratings and images.
+
+</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-indigo-900 text-indigo-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">HTML</span>
+                             <span class="bg-indigo-900 text-indigo-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">CSS</span>
+                             <span class="bg-indigo-900 text-indigo-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">JAVASCRIPT</span>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Project Card 2 -->
+                <div class="card-glow rounded-lg reveal" style="transition-delay: 150ms;">
+                    <img src="https://placehold.co/600x400/1e1b3a/6366f1?text=Project+2" class="rounded-t-lg"
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1e1b3a/ffffff?text=Image+Not+Found';">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white">CLINT WEBSITE</h3>
+                        <p class="text-slate-400 mt-2">"I successfully designed and developed a fully functional website for a client by applying my skills in web development, including HTML, CSS, JavaScript, and other relevant tools. The website is responsive, user-friendly, and tailored to meet the client's specific needs and objectives. This project reflects my ability to handle real-world tasks, understand client requirements, and deliver a high-quality product on time."
+
+</p>
+                         <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-purple-900 text-purple-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">MIND</span>
+                             <span class="bg-purple-900 text-purple-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">TIME</span>
+                             <span class="bg-purple-900 text-purple-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">EFFORTS</span>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Project Card 3 -->
+                <div class="card-glow rounded-lg reveal" style="transition-delay: 300ms;">
+                    <img src="https://placehold.co/600x400/1e1b3a/8b5cf6?text=Project+3" class="rounded-t-lg"
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1e1b3a/ffffff?text=Image+Not+Found';">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white">MEDICINE REMINDER</h3>
+                        <p class="text-slate-400 mt-2">Developed a cross-platform Medicine Reminder App with scheduled notifications, real-time tracking, and a user-friendly interface to help users manage daily medications.
+
+</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-indigo-900 text-indigo-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">BACKEND</span>
+                            <span class="bg-indigo-900 text-indigo-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">FIREBASE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Gallery Section -->
+        <section id="gallery" class="py-20 md:py-32">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white reveal">Gallery</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto mt-4 reveal"></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid gap-4 reveal">
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="ASIM.jpg" alt=""></div>
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="TARIQ.jpg" alt=""></div>
+                </div>
+                <div class="grid gap-4 reveal" style="transition-delay: 100ms;">
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="SAAD.jpg" alt=""></div>
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="U.jpg" alt=""></div>
+                </div>
+                 <div class="grid gap-4 reveal" style="transition-delay: 200ms;">
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="I.jpg" alt=""></div>
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="COLLEGE.jpg" alt=""></div>
+                </div>
+                 <div class="grid gap-4 reveal" style="transition-delay: 300ms;">
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="GROUND.jpg" alt=""></div>
+                    <div><img class="h-auto max-w-full rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105" src="KILLER.jpg" alt=""></div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 md:py-32">
+             <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white reveal">Get In Touch</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto mt-4 reveal"></div>
+            </div>
+            <div class="max-w-xl mx-auto card-glow p-8 md:p-12 rounded-lg reveal">
+                <form action="#" method="POST">
+                    <div class="relative z-0 w-full mb-8 group">
+                        <input type="text" name="floating_name" id="floating_name" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer" placeholder=" " required />
+                        <label for="floating_name" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Your Name</label>
+                    </div>
+                     <div class="relative z-0 w-full mb-8 group">
+                        <input type="email" name="floating_email" id="floating_email" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer" placeholder=" " required />
+                        <label for="floating_email" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-8 group">
+                        <textarea name="floating_message" id="floating_message" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer" placeholder=" " required rows="4"></textarea>
+                        <label for="floating_message" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Your Message</label>
+                    </div>
+                    <button type="submit" class="w-full button-glow bg-purple-600 text-white font-bold py-3 px-8 rounded-full text-lg">
+                        Send Message
+                    </button>
+                </form>
+                <div class="flex justify-center space-x-6 mt-8">
+                    <a href="#" class="text-gray-400 hover:text-purple-400 transition-transform duration-300 hover:scale-110">
+                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.286 2.553 7.94 6.205 9.385.45.083.615-.195.615-.434 0-.215-.008-.78-.013-1.532-2.484.54-3.007-1.198-3.007-1.198-.41-1.04-1-1.317-1-1.317-.818-.56.062-.548.062-.548.904.064 1.38 1.93.93 1.38.812 0 1.554-.29 2.164-.563.083-1.437.44-1.284.99-1.58-2.22-.253-4.555-1.113-4.555-4.943 0-1.09.39-1.984 1.03-2.684-.103-.253-.446-1.27.098-2.647 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.84a9.564 9.564 0 012.502.336c1.91-1.296 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.7 1.03 1.593 1.03 2.684 0 3.84-2.337 4.687-4.565 4.935.43.37.824 1.1.824 2.222 0 1.604-.015 2.895-.015 3.288 0 .24.164.522.62.431A10.003 10.003 0 0022 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd" /></svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-purple-400 transition-transform duration-300 hover:scale-110">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-purple-400 transition-transform duration-300 hover:scale-110">
+                       <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.206v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.225-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.337 7.433c-.017-1.005.816-1.836 1.833-1.836.995 0 1.833.83 1.834 1.836 0 1.005-.838 1.836-1.834 1.836-.996 0-1.816-.83-1.833-1.836zM6.67 16.338H3.997v-8.59h2.673v8.59zM17.638 2H6.362A4.362 4.362 0 002 6.362v11.276A4.362 4.362 0 006.362 22h11.276A4.362 4.362 0 0022 17.638V6.362A4.362 4.362 0 0017.638 2z" clip-rule="evenodd" /></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 border-t border-gray-800">
+        <p class="text-slate-400">&copy; 2025 MOHD ASIM SAAD | ALL RIGHT RESERVED|</p>
+    </footer>
+
+    <!-- Lightbox for Gallery -->
+    <div id="lightbox" class="fixed top-0 left-0 w-full h-full bg-black/80 place-items-center hidden"
+        onclick="this.classList.remove('active')">
+        <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[80vh] rounded-lg shadow-2xl"
+             onclick="event.stopPropagation()">
+    </div>
+    
+    <!-- three.js for hero background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        // --- Navbar Scroll Effect ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+
+        // --- Mobile Menu Toggle ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // --- Typing Effect ---
+        const typingTextElement = document.getElementById('typing-text');
+        const textToType = "'MOHD ASIM SAAD'"; // Change this to your name
+        let i = 0;
+        function typeWriter() {
+            if (i < textToType.length) {
+                typingTextElement.innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+        typeWriter();
+
+        // --- Scroll Reveal Animations ---
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // --- Animated Skills Bars ---
+        const skillItems = document.querySelectorAll('.skill-item');
+        const skillObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBar = entry.target.querySelector('.progress-bar');
+                    const width = progressBar.getAttribute('data-width');
+                    progressBar.style.width = width;
+                    observer.unobserve(entry.target); // Animate only once
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        skillItems.forEach(item => skillObserver.observe(item));
+
+        // --- Gallery Lightbox ---
+        const galleryImages = document.querySelectorAll('#gallery img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        galleryImages.forEach(img => {
+            img.addEventListener('click', () => {
+                lightboxImg.src = img.src;
+                lightbox.classList.add('active');
+            });
+        });
+        
+        // --- Hero Section Animated Background ---
+        let scene, camera, renderer, stars;
+
+        function initHeroBackground() {
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 1;
+            camera.rotation.x = Math.PI / 2;
+
+            // Renderer
+            const canvas = document.getElementById('hero-canvas');
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+            
+            // Stars
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 6000;
+            const positions = new Float32Array(starCount * 3);
+            for(let i=0; i < starCount * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 500;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            let starMaterial = new THREE.PointsMaterial({
+                color: 0xaaaaaa,
+                size: 0.7,
+                transparent: true
+            });
+
+            stars = new THREE.Points(starGeo, starMaterial);
+            scene.add(stars);
+
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            stars.rotation.z += 0.0002;
+            renderer.render(scene, camera);
+        }
+        
+        initHeroBackground();
+    });
+    </script>
+</body>
+</html>
